@@ -11,7 +11,6 @@ Options:
     [size]  The length of each side (the board is a square)
 
 """
-
 from time import sleep
 from random import randint, choice
 from termcolor import colored
@@ -24,9 +23,9 @@ import sys
 board_size = 5
 
 # for generating words from internal dictionary
-most_common_words = "most_common_words.txt"
-if os.path.isfile(most_common_words):
-    word_file = most_common_words
+codenames_words = "codenames_words.txt"
+if os.path.isfile(codenames_words):
+    word_file = codenames_words
 else:
     word_file = "/usr/share/dict/words"
 
@@ -62,7 +61,6 @@ class Board:
         
         print
 
-
 class Team():
     #secretWords = 8
     def __init__(self, color):
@@ -96,7 +94,6 @@ def ask_to_generate():
         generate_words()
         print_word_list()
 
-
 def generate_words():
     global board_size
     global words
@@ -113,7 +110,6 @@ def generate_words():
         if decision.lower() == 'y':
             print "{:>39}{}".format("", word_option)
             words.append(word_option)
-
 
 def print_word_list():
     global words
@@ -136,14 +132,11 @@ def print_word_list():
 if len(sys.argv) > 1:
     board_size = int(sys.argv[1])
 
-
 # ask if user would like to generate words
 ask_to_generate()
 
-
 # Generate the game board 
 Game = Board(board_size)
-
 
 # Create teams (Red, Blue, and the Assassin card)
 Red   = Team('red')
@@ -151,12 +144,10 @@ Blue  = Team('blue')
 White = Team('white')
 White.secretWords = 1
 
-
 # Randomly place cards on board
 White.randomPlacement()
 Red.randomPlacement()
 Blue.randomPlacement()
-
 
 # Display the board
 Game.display()
