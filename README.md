@@ -12,7 +12,7 @@ this script uses the default list of words at the location:
 
 /usr/share/dict/words
 
-However, if you put a text file named "codenames_words.txt" in the same directory as where you run the script from, it will use this instead.
+However, if you put a text file named "codenames_words.txt" in the same directory as the script, it will use this instead.
 
 The file in this repo ("codenames_words.txt") was taken from the github repo:
 
