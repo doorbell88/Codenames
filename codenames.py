@@ -52,7 +52,6 @@ words = []
 class Board:
     def __init__(self, size):
         self.size = size
-        
         self.board = []
         for x in range(self.size):
             self.board.append(['   '] * self.size)
@@ -65,10 +64,7 @@ class Board:
         
         for row in self.board:
             print "\t",
-            #print '|',
             print '|'.join(row),
-            #print '|'
-            
             print
             print "\t",
             print '-'*(self.size)*4 
