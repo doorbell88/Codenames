@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-# CODENAMES 
+
 """
+Codenames
+---------
 A program to randomly generate a map for red/blue players for a codenames game.
 
 Usage:
@@ -89,7 +91,6 @@ class Team():
             # if the spot is not yet chosen, place marker there
             if Game.board[row][col] == '   ':
                 Game.board[row][col] = colored(' X ', self.color, 'on_'+self.color)
-                #Game.board[row][col] = ' X '
                 n+=1            
     
 
@@ -167,8 +168,8 @@ White.secretWords = 1
 
 # Randomly place cards on board
 White.randomPlacement()
-Red.randomPlacement()
 Blue.randomPlacement()
+Red.randomPlacement()
 
 # Display the board
 Game.display()
