@@ -16,6 +16,15 @@ from random import randint, choice
 from termcolor import colored
 import os
 import sys
+import signal
+
+#----------------- SIGNAL HANDLER -------------------#
+def signal_handler(signum, frame):
+    os.system('tput sgr0')
+    print "\n"
+    sys.exit()
+
+signal.signal(signal.SIGINT, signal_handler)
 
 
 #--------------------------------- VARIABLES -----------------------------------
@@ -46,7 +55,6 @@ class Board:
         for x in range(self.size):
             self.board.append(['   '] * self.size)
 
-
     def display(self):
         os.system('clear')
         print
@@ -66,7 +74,6 @@ class Board:
         print
 
 class Team():
-    #secretWords = 8
     def __init__(self, color):
         global board_size
         self.color = color
@@ -93,32 +100,42 @@ def ask_to_generate():
     print "Word file:  {}".format(word_file)
     gen_words = raw_input("Would you like to generate words (y/n?):  ")
     if gen_words.lower() == 'y':
-        print
-        print '    (Words to generate: {})'.format(board_size**2)
         generate_words()
         print_word_list()
 
 def generate_words():
     global board_size
     global words
-    print
-
     i=0
     while len(words) < (board_size ** 2):
+        # clear the screen to refresh the list
+        os.system('clear')
+        print '\n    (Words to generate: {})\n'.format(board_size**2)
+
+        # print list for words so far
+        for i in range(len(words)):
+            print "{:>2})  {}".format((i+1), words[i])
+
+        # get random word that's not on list so far
         word_option = choice(word_list)
         while word_option in words:
             word_option = choice(word_list)
+
+        # ask user if they want to use this word
+        os.system('tput bold')
         number = len(words) + 1
         decision = raw_input("{:>2})  {:<20} --> (y/n?):  "
                              .format(number, word_option))
+        os.system('tput sgr0')
+
+        # add to word list if so
         if decision.lower() == 'y':
-            print "{:>39}{}".format("", word_option)
             words.append(word_option)
 
 def print_word_list():
     global words
     os.system('clear')
-    print
+    print "\n\n"
 
     for i in range(len(words)):
         number = i+1
@@ -134,7 +151,7 @@ def print_word_list():
 #------------------------------------ MAIN -------------------------------------
 # get board size (if argument is given)
 if len(sys.argv) > 1:
-    board_size = int(sys.argv[1])
+    board_size = abs(int(sys.argv[1]))
 
 # ask if user would like to generate words
 ask_to_generate()
