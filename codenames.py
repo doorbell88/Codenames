@@ -23,12 +23,16 @@ import sys
 board_size = 5
 
 # for generating words from internal dictionary
+location = os.path.dirname(os.path.realpath(__file__))
 codenames_words = "codenames_words.txt"
-if os.path.isfile(codenames_words):
-    word_file = codenames_words
+
+# check if codenames_words.txt exists in script directory
+if os.path.isfile('{}/{}'.format(location, codenames_words)):
+    word_file = '{}/{}'.format(location, codenames_words)
 else:
     word_file = "/usr/share/dict/words"
 
+# read word_file
 word_list = open(word_file).read().splitlines()
 words = []
 
