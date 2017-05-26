@@ -24,7 +24,12 @@ import sys
 board_size = 5
 
 # for generating words from internal dictionary
-word_file = "/usr/share/dict/words"
+most_common_words = "most_common_words.txt"
+if os.path.isfile(most_common_words):
+    word_file = most_common_words
+else:
+    word_file = "/usr/share/dict/words"
+
 word_list = open(word_file).read().splitlines()
 words = []
 
@@ -81,7 +86,9 @@ class Team():
 
 #--------------------------------- FUNCTIONS -----------------------------------
 def ask_to_generate():
+    global word_file
     os.system('clear')
+    print "Word file:  {}".format(word_file)
     gen_words = raw_input("Would you like to generate words (y/n?):  ")
     if gen_words.lower() == 'y':
         print
