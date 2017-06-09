@@ -47,7 +47,7 @@ simulates the popular "Codenames" board game
     ________________________________________________________________________________
 
 
-this script uses the default list of words at the location:
+This script uses the default list of words at the location:
 
 /usr/share/dict/words
 
