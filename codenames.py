@@ -1,16 +1,52 @@
 #!/usr/bin/env python
 
 """
+________________________________________________________________________________
 Codenames
 ---------
 A program to randomly generate a map for red/blue players for a codenames game.
 
 Usage:
     python codenames.py
-    python codenames.py [size]
+    python codenames.py [SIZE]
+    python codenames.py [-r | --rules]
+    python codenames.py [-h | --help]
 
 Options:
-    [size]  The length of each side (the board is a square)
+    SIZE         The length of each side (the board is a square)
+    -r, --rules  Show the rules
+    -h, --help   Show usage
+
+________________________________________________________________________________
+Rules:
+    - Players:       2-8
+    - Time:          15 minutes
+    - Default size:  (5x5) --> 8 words per team
+
+    Gameplay:
+        Players form two teams.  Each team has a single Spymaster, and the rest
+        are Guessers.  The board is a square matrix of words that everyone can
+        see.  Only the Spymasters can see the colored grid on the computer.
+        Each Spymaster has several words they need their teammates to guess by
+        giving one-word clues.
+
+        There is also one Assassin word - if guessed by a team, that team loses
+        immediately.
+
+    Turn Summary:
+        The Spymaster gives a one-word clue, and a number.
+            (a) The number is how many codenames on the board relate to the one-
+                word clue.  The teammates can guess that number of words that
+                turn.  If they have guess all correct that turn, they may guess
+                one additional word.
+            (b) The turn is over if a neutral word or one of the other team's
+                words is guessed.
+            (c) If the Assassin word is guessed, the game is over and that team 
+                loses the game.
+
+    Endgame/Victory:
+        The first team to guess all their words wins.
+________________________________________________________________________________
 
 """
 from time import sleep
@@ -36,16 +72,6 @@ board_size = 5
 # for generating words from internal dictionary
 location = os.path.dirname(os.path.realpath(__file__))
 codenames_words = "codenames_words.txt"
-
-# check if codenames_words.txt exists in script directory
-if os.path.isfile('{}/{}'.format(location, codenames_words)):
-    word_file = '{}/{}'.format(location, codenames_words)
-else:
-    word_file = "/usr/share/dict/words"
-
-# read word_file
-word_list = open(word_file).read().splitlines()
-words = []
 
 
 #---------------------------------- CLASSES ------------------------------------
@@ -77,7 +103,7 @@ class Team():
         self.color = color
         self.secretWords = ((board_size**2) - 1) / 3
     
-    def randomPlacement(self):
+    def randomPlacement(self, Game):
         n=0
         while n < self.secretWords:
             # choose random coordinates
@@ -91,12 +117,120 @@ class Team():
     
 
 #--------------------------------- FUNCTIONS -----------------------------------
+def get_cmd_line_args():
+    global board_size
+    # get board size (if argument is given)
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+
+        #----------------------------------------------------#
+        # specify board size (if arg is a number)
+        try:
+            board_size = abs(int(arg))
+            return
+        except:
+            pass
+
+        #----------------------------------------------------#
+        #rules
+            if arg in ['-r', '--rules']:
+                display_rules()
+                exit()
+                
+        #----------------------------------------------------#
+        # usage
+            if arg not in ['-r', '--rules']:
+                display_usage()
+                exit()
+
+        #----------------------------------------------------#
+        # usage (if argument is ill-formed or unknown)
+        else:
+            display_usage()
+            exit()
+    
+def display_usage():
+    os.system('clear')
+    print "________________________________________________________________________________"
+    print "Codenames"
+    print "---------"
+    print "A program to randomly generate a map for red/blue players for a codenames game."
+    print ""
+    print "Usage:"
+    print "    python codenames.py"
+    print "    python codenames.py [SIZE]"
+    print "    python codenames.py [-r | --rules]"
+    print "    python codenames.py [-h | --help]"
+    print ""
+    print "Options:"
+    print "    SIZE         The length of each side (the board is a square)"
+    print "    -r, --rules  Show the rules"
+    print "    -h, --help   Show usage"
+    print "________________________________________________________________________________"
+    print
+
+def display_rules():
+    os.system('clear')
+    print "________________________________________________________________________________"
+    print "Rules:"
+    print "    - Players:       2-8"
+    print "    - Time:          15 minutes"
+    print "    - Default size:  (5x5) --> 8 words per team"
+    print ""
+    print "    Gameplay:"
+    print "        Players form two teams.  Each team has a single Spymaster, and the rest"
+    print "        are Guessers.  The board is a square matrix of words that everyone can"
+    print "        see.  Only the Spymasters can see the colored grid on the computer."
+    print "        Each Spymaster has several words they need their teammates to guess by"
+    print "        giving one-word clues."
+    print ""
+    print "        There is also one Assassin word - if guessed by a team, that team loses"
+    print "        immediately."
+    print ""
+    print "    Turn Summary:"
+    print "        The Spymaster gives a one-word clue, and a number."
+    print "            (a) The number is how many codenames on the board relate to the one-"
+    print "                word clue.  The teammates can guess that number of words that"
+    print "                turn.  If they have guess all correct that turn, they may guess"
+    print "                one additional word."
+    print "            (b) The turn is over if a neutral word or one of the other team's"
+    print "                words is guessed."
+    print "            (c) If the Assassin word is guessed, the game is over and that team "
+    print "                loses the game."
+    print ""
+    print "    Endgame/Victory:"
+    print "        The first team to guess all their words wins."
+    print "________________________________________________________________________________"
+    print
+
+def get_word_file():
+    global word_file
+    # check if codenames_words.txt exists in script directory
+    if os.path.isfile('{}/{}'.format(location, codenames_words)):
+        word_file = '{}/{}'.format(location, codenames_words)
+    else:
+        word_file = "/usr/share/dict/words"
+
 def ask_to_generate():
     global word_file
+    global word_list
+    global words
+
+    # clear the screen
     os.system('clear')
+
+    # prepare to read word_file
+    get_word_file()
+    word_list = open(word_file).read().splitlines()
+    words = []
+
+    # ask user if they want to generate words
     print "Word file:  {}".format(word_file)
-    gen_words = raw_input("Would you like to generate words (y/n?):  ")
-    if gen_words.lower() == 'y':
+    print
+    gen_words = raw_input("    --> Would you like to generate words (y?):  ")
+
+    # if user wants to generate words, do so
+    if gen_words.lower() in ['y', 'yes']:
         generate_words()
         print_word_list()
 
@@ -107,7 +241,8 @@ def generate_words():
     while len(words) < (board_size ** 2):
         # clear the screen to refresh the list
         os.system('clear')
-        print '\n    (Words to generate: {})\n'.format(board_size**2)
+        print "    (Words to generate: {})".format(board_size**2)
+        print "    Type 'play' to show board\n"
 
         # print list for words so far
         for i in range(len(words)):
@@ -121,13 +256,15 @@ def generate_words():
         # ask user if they want to use this word
         os.system('tput bold')
         number = len(words) + 1
-        decision = raw_input("{:>2})  {:<20} --> (y/n?):  "
+        decision = raw_input("{:>2})  {:<20} --> (y?):  "
                              .format(number, word_option))
         os.system('tput sgr0')
 
         # add to word list if so
-        if decision.lower() == 'y':
+        if decision.lower() in  ['y', 'yes']:
             words.append(word_option)
+        elif decision.lower() == 'play':
+            show_board()
 
 def print_word_list():
     global words
@@ -144,28 +281,32 @@ def print_word_list():
     while play.lower() != 'play':
         play = raw_input("Type 'play' to show board  -->  ")
 
+def show_board():
+    # Generate the game board 
+    Game = Board(board_size)
+
+    # Create teams (Red, Blue, and the Assassin card)
+    Red   = Team('red')
+    Blue  = Team('blue')
+    White = Team('white')
+    White.secretWords = 1
+
+    # Randomly place cards on board
+    White.randomPlacement(Game)
+    Blue.randomPlacement(Game)
+    Red.randomPlacement(Game)
+
+    # Display the board
+    Game.display()
+    exit()
+
 
 #------------------------------------ MAIN -------------------------------------
-# get board size (if argument is given)
-if len(sys.argv) > 1:
-    board_size = abs(int(sys.argv[1]))
+#process command line arguments
+get_cmd_line_args()
 
 # ask if user would like to generate words
 ask_to_generate()
 
-# Generate the game board 
-Game = Board(board_size)
-
-# Create teams (Red, Blue, and the Assassin card)
-Red   = Team('red')
-Blue  = Team('blue')
-White = Team('white')
-White.secretWords = 1
-
-# Randomly place cards on board
-White.randomPlacement()
-Blue.randomPlacement()
-Red.randomPlacement()
-
-# Display the board
-Game.display()
+# display the board and exit
+show_board()
