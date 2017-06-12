@@ -70,8 +70,12 @@ signal.signal(signal.SIGINT, signal_handler)
 board_size = 5
 
 # for generating words from internal dictionary
-location = os.path.dirname(os.path.realpath(__file__))
-codenames_words = "codenames_words.txt"
+script_location     = os.path.dirname(os.path.realpath(__file__))
+codenames_words_txt = "codenames_words.txt"
+codenames_wordfile  = '{}/{}'.format(script_location, codenames_words_txt)
+
+# built-in dictionary
+word_file = "/usr/share/dict/words"
 
 
 #---------------------------------- CLASSES ------------------------------------
@@ -204,12 +208,11 @@ def display_rules():
     print
 
 def get_word_file():
+    global codenames_wordfile
     global word_file
     # check if codenames_words.txt exists in script directory
-    if os.path.isfile('{}/{}'.format(location, codenames_words)):
-        word_file = '{}/{}'.format(location, codenames_words)
-    else:
-        word_file = "/usr/share/dict/words"
+    if os.path.isfile(codenames_wordfile):
+        word_file = codenames_wordfile
 
 def ask_to_generate():
     global word_file
